@@ -128,7 +128,10 @@ class PointNetCLS(nn.Module):
         self.maxpool = MaxPool1D()
         # Classification head  
         self.cls_head = PointNetCLSHead(1024, num_classes)
-        
+    
+    def regularization_loss(self):
+        return self.core.regularization_loss()
+
     def forward(self, x):
         
         x = self.core(x)
