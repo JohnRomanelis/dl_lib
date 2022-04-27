@@ -23,16 +23,16 @@ def get_ModelNet40(path, name="original", batch_size=32, drop_last=False):
         train_transforms = [RandomPointDropout(), 
                             RandomShuffle(), 
                             AnisotropicScale(), 
+                            ToTensor(),
                             RandomRotate(180, 0),
                             RandomRotate(180, 1),
-                            RandomRotate(180, 2),
-                            ToTensor()]
+                            RandomRotate(180, 2)]
         
         valid_transforms = [RandomShuffle(), 
+                            ToTensor(),
                             RandomRotate(180, 0),
                             RandomRotate(180, 1),
-                            RandomRotate(180, 2),
-                            ToTensor()]
+                            RandomRotate(180, 2)]
 
         train_dataset = ModelNet40SampledCustom(path, num_points=1024, partition='train', transforms=train_transforms)
         valid_dataset = ModelNet40SampledCustom(path, num_points=1024, partition='test' , transforms=valid_transforms)
