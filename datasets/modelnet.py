@@ -83,6 +83,7 @@ def jitter_pointcloud(pointcloud, sigma=0.01, clip=0.02):
 
 class ModelNet40Sampled(Dataset):
     def __init__(self, path, num_points, partition='train'):
+        assert partition in ['train', 'test'], "Partition should be either 'train' or 'test'"
         self.data, self.label = load_data(partition, path)
         self.num_points = num_points
         self.partition = partition        
@@ -179,7 +180,7 @@ class RandomShuffle:
         np.random.shuffle(pc)
         return pc
 
-class WeirdTransform:
+class AnisotropicScale:
     def __call__(self, pc):
         xyz1 = np.random.uniform(low=2./3., high=3./2., size=[3])
         xyz2 = np.random.uniform(low=-0.2, high=0.2, size=[3])
