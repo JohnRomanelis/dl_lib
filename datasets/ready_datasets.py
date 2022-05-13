@@ -1,7 +1,7 @@
 from .modelnet import ModelNet40Sampled, ModelNet40SampledCustom
 from .modelnet import RandomPointDropout, RandomRotate, RandomShuffle, AnisotropicScale, ToTensor
 from torch.utils.data import DataLoader
-
+from ..optimization.student_teacher import TwoCropsTransform
 
 def get_ModelNet40(path, name="original", batch_size=32, drop_last=False):
     # Args:
@@ -36,6 +36,17 @@ def get_ModelNet40(path, name="original", batch_size=32, drop_last=False):
 
         train_dataset = ModelNet40SampledCustom(path, num_points=1024, partition='train', transforms=train_transforms)
         valid_dataset = ModelNet40SampledCustom(path, num_points=1024, partition='test' , transforms=valid_transforms)
+
+    elif name == "two_crops_original":
+
+        train_transforms = TwoCropsTransform([
+                                RandomPointDropout(), 
+                                RandomShuffle(), 
+                                AnisotropicScale(), 
+                                ToTensor()])
+
+        train_dataset = ModelNet40SampledCustom(path, num_points=1024, partition='train', transforms=train_transforms)
+        valid_dataset = ModelNet40Sampled(path, num_points=1024, partition='test')
 
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=8, drop_last=drop_last)
