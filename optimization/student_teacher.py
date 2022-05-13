@@ -1,7 +1,7 @@
 from email.mime import base
 import torch.nn.functional as F
 from torchvision.transforms import Compose
-
+from torch.optim import Optimizer
 class TwoCropsTransform:
     """Take two random crops of one image as the query and key."""
 
@@ -16,15 +16,16 @@ class TwoCropsTransform:
         return [q, k]
 
 
-class StudentTeacherOptim:
+class StudentTeacherOptim(Optimizer):
 
     def __init__(self, student_params, teacher_params, momentum):
-
+        defaults = dict(momentum=momentum)
+        super().__init__(student_params, defaults)
         self.studen_params = student_params
         self.teacher_params = teacher_params
         self.m = momentum
 
-    def step(self):
+    def step(self, *args, **kwargs):
         # teacher parameters are updated through the momentum rule
         for t_param, s_param in zip(self.teacher_params, self.studen_params):
             t_param.data = t_param.data * self.m + s_param.data * (1. - self.m)
