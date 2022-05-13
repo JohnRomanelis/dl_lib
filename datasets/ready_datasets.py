@@ -13,7 +13,7 @@ def get_ModelNet40(path, name="original", batch_size=32, drop_last=False):
     #
     # Returns:  the train and validation dataloader
 
-    assert name in ["original", "rotated"]
+    assert name in ["original", "rotated", "two_crops_original"]
 
     if name == "original":
         train_dataset = ModelNet40Sampled(path, num_points=1024, partition='train')
