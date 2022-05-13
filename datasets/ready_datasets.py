@@ -1,7 +1,7 @@
 from .modelnet import ModelNet40Sampled, ModelNet40SampledCustom
 from .modelnet import RandomPointDropout, RandomRotate, RandomShuffle, AnisotropicScale, ToTensor
 from torch.utils.data import DataLoader
-from ..optimization.student_teacher import TwoCropsTransform
+from ..transforms import TwoCropsTransform
 
 def get_ModelNet40(path, name="original", batch_size=32, drop_last=False):
     # Args:
