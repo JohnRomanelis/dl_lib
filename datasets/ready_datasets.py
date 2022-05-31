@@ -1,7 +1,11 @@
+from re import L
 from .modelnet import ModelNet40Sampled, ModelNet40SampledCustom
 from .modelnet import RandomPointDropout, RandomRotate, RandomShuffle, AnisotropicScale, ToTensor
 from torch.utils.data import DataLoader
 from ..transforms import TwoCropsTransform
+
+from .modelnet40c import ModelNet40C
+
 
 def get_ModelNet40(path, name="original", batch_size=32, drop_last=False):
     # Args:
@@ -73,3 +77,70 @@ def get_ModelNet40(path, name="original", batch_size=32, drop_last=False):
 
     return train_loader, valid_loader
 
+
+def get_ModelNet40C(path, corruption="all", severity="all", batch_size=32):
+    """
+    Loads ModelNet40-C dataset
+     - You can either select a specific corruption type and severity 
+       or ask for multiple versions.
+    """ 
+
+    corruptions = {
+        "Density" : ["occlusion", "lidar", "density", "density_inc", "cutout"],
+        "Noise" : ["uniform", "gaussian", "impulse", "background", "upsampling"],
+        "Transformation" : ["rotation", "shear", "distortion", "distortion_rbf", "distortion_rbf_inv"]
+    }
+
+    # CONFIGURE CORRUPTION TYPE
+
+    # select corruption by corruption category
+    if corruption in ["Density", "Noise", "Transformation"]:
+        corruption = corruptions[corruption]
+
+    else: 
+        # there is no need to separate corruptions by category
+        corruptions = [*corruptions['Density'], *corruptions['Noise'], *corruptions['Transformation']]
+
+        if corruption == "all":
+            corruption = corruptions
+        
+        elif isinstance(corruption, (list, tuple)):
+            for c in corruption:
+                assert c in corruptions, f"'{c}' is not a valid corruption option"
+
+        elif isinstance(corruption, str):
+            assert corruption in corruptions, f"'{corruption}' is not a valid corruption option"
+            corruption = [corruption]
+        else:
+            raise ValueError
+    
+    # CONFIGURE SEVERITY LEVER
+    severity_levels = [1, 2, 3, 4, 5]
+
+    if severity == "all":
+        severity = severity_levels
+    elif isinstance(severity, (list, tuple)):
+        for s in severity:
+            assert s in severity_levels, f"'{s}' is not a valid severity option"
+    elif isinstance(severity, int):
+        assert severity in severity_levels, f"'{severity}' is not a valid severity option"
+        severity = [severity]
+    else: 
+        raise ValueError
+    
+    dataloaders = []
+
+    for c in corruption:
+        for s in severity:
+            dataloaders.append(
+                DataLoader(
+                    ModelNet40C(path, corruption=c, severity=s),
+                    batch_size=batch_size, shuffle=False, num_workers=8, drop_last=False
+                )
+            )
+    
+    if len(dataloaders) == 1:
+        return dataloaders[0]
+    
+    return dataloaders
+    
