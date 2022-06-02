@@ -27,7 +27,8 @@ class ModelNet40C(Dataset):
     def __getitem__(self, item):
         pointcloud = self.data[item]
         label = self.label[item]
-        return {'pc': pointcloud, 'label': label.item()}
+        #return {'pc': pointcloud, 'label': label.item()}
+        return pointcloud, label.item()
 
     def __len__(self):
         return self.data.shape[0]
