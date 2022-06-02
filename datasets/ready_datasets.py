@@ -85,13 +85,12 @@ def get_ModelNet40C(path, corruption="all", severity="all", batch_size=32):
        or ask for multiple versions.
     """ 
 
+    # CONFIGURE CORRUPTION TYPE
     corruptions = {
         "Density" : ["occlusion", "lidar", "density", "density_inc", "cutout"],
         "Noise" : ["uniform", "gaussian", "impulse", "background", "upsampling"],
         "Transformation" : ["rotation", "shear", "distortion", "distortion_rbf", "distortion_rbf_inv"]
     }
-
-    # CONFIGURE CORRUPTION TYPE
 
     # select corruption by corruption category
     if corruption in ["Density", "Noise", "Transformation"]:
