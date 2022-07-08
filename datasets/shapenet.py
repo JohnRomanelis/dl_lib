@@ -90,7 +90,7 @@ class ShapeNet55(Dataset):
 
         assert split in ['train', 'test']
 
-        # number of presampled pointclouds
+        # number of presampled points
         self.n_points = 8192
         # number of points to sample/use
         self.s_points = s_points
