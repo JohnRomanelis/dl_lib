@@ -1,6 +1,6 @@
 from re import L
 from .modelnet import ModelNet40Sampled, ModelNet40SampledCustom
-from .modelnet import RandomPointDropout, RandomRotate, RandomShuffle, AnisotropicScale, ToTensor
+from .modelnet import RandomPointDropout, RandomRotate, RandomShuffle, AnisotropicScale, ToTensor, UnitSphereNormalization
 from torch.utils.data import DataLoader
 from ..transforms import TwoCropsTransform
 
@@ -17,11 +17,24 @@ def get_ModelNet40(path, name="original", batch_size=32, drop_last=False):
     #
     # Returns:  the train and validation dataloader
 
-    assert name in ["original", "rotated", "two_crops_original", "two_crops_rotated"]
+    assert name in ["original", "rotated", "normalized", "two_crops_original", "two_crops_rotated"]
 
     if name == "original":
         train_dataset = ModelNet40Sampled(path, num_points=1024, partition='train')
         valid_dataset = ModelNet40Sampled(path, num_points=1024, partition='test')
+
+    if name == "normalized":
+        train_transforms = [RandomPointDropout(),
+                            RandomShuffle(),
+                            UnitSphereNormalization(), 
+                            #AnisotropicScale(), 
+                            ToTensor()]
+
+        valid_transforms = [UnitSphereNormalization(), 
+                            ToTensor()]
+        
+        train_dataset = ModelNet40SampledCustom(path, num_points=1024, partition='train', transforms=train_transforms)
+        valid_dataset = ModelNet40SampledCustom(path, num_points=1024, partition='test' , transforms=valid_transforms)
 
     elif name == "rotated":
         train_transforms = [RandomPointDropout(), 

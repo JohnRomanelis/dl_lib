@@ -129,6 +129,24 @@ import random # for RandomRotate transform
 import math # for RandomRotate transform
 import spconv.pytorch.utils as sputils
 
+class RandomPointKeep:
+    # NOT tested
+    def __init__(self, num_points):
+        self.num_points = num_points
+
+    def __call__(self, x):
+        np.shuffle(x)
+        return x[:self.num_points, :]
+
+
+class UnitSphereNormalization:
+
+    def __call__(self, pc):
+        centroid = np.mean(pc, axis=0)
+        pc = pc - centroid
+        m = np.max(np.sqrt(np.sum(pc**2, axis=1)))
+        pc = pc / m
+        return pc
 
 class VoxelizePointCloud:
 
@@ -244,8 +262,6 @@ class RandomRotate:
 
         return (matrix @ pc).squeeze(-1)
 
-
-        
 
 from collections import defaultdict
 # custom collate function that can operate on voxels
