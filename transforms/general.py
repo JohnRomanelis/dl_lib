@@ -5,7 +5,7 @@ import math
 import random
 
 
-__all__ = ['TwoCropsTransform', 'RandomPointKeep', 'UnitSphereNormalization', 'RandomShuffle', 'AnisotropicScale', 'RandomPointDropout', 'ToTensor']
+__all__ = ['TwoCropsTransform', 'RandomPointKeep', 'UnitSphereNormalization', 'RandomShuffle', 'AnisotropicScale', 'RandomPointDropout', 'ToTensor', 'RandomRotate']
 
 class TwoCropsTransform:
     """Take two random crops of one image as the query and key."""
