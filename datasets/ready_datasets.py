@@ -1,8 +1,7 @@
-from re import L
 from .modelnet import ModelNet40Sampled, ModelNet40SampledCustom
-from .modelnet import RandomPointDropout, RandomRotate, RandomShuffle, AnisotropicScale, ToTensor, UnitSphereNormalization
+from transforms import RandomPointDropout, RandomRotate, RandomShuffle, AnisotropicScale, ToTensor, UnitSphereNormalization
 from torch.utils.data import DataLoader
-from ..transforms import TwoCropsTransform
+from transforms import TwoCropsTransform
 
 from .modelnet40c import ModelNet40C
 
