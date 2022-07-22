@@ -144,3 +144,60 @@ class ShapeNet55(Dataset):
 
     def __len__(self):
         return len(self.file_list)
+
+
+class ShapeNet55Custom(Dataset):
+    """
+    Version of ShapeNet used in Point-BERT (https://github.com/lulutang0608/Point-BERT/tree/49e2c7407d351ce8fe65764bbddd5d9c0e0a4c52)
+    for pretraining the model.
+    There are some minor modifications to the original code. 
+    """
+
+    def __init__(self, root, split, s_points=1024, transforms=[]):
+
+        assert split in ['train', 'test']
+
+        # number of presampled points
+        self.n_points = 8192
+        # number of points to sample/use
+        self.s_points = s_points
+        # transforms to apply to the data
+        if not isinstance(transforms, (list, tuple)):
+            transforms = [transforms] # handle single transform
+        self.transfroms = transforms
+
+        pc_folder_name = 'shapenet_pc'
+        split_folder_name = 'ShapeNet-55'
+        split_file_name = f'{split}.txt'
+
+        self.pc_path = os.path.join(root, pc_folder_name)
+        self.split_file_path = os.path.join(root, split_folder_name, split_file_name)
+
+        # reading split file names
+        with open(self.split_file_path, 'r') as f:
+            lines = f.readlines()
+        
+        self.file_list = []
+        for line in lines:
+            line = line.strip()
+            taxonomy_id = line.split('-')[0]
+            model_id = line.split('-')[1].split('.')[0]
+
+            self.file_list.append({
+                'taxonomy_id': taxonomy_id,
+                'model_id'   : model_id,
+                'file_path'  : line
+            })
+
+    def __getitem__(self, idx):
+        sample = self.file_list[idx]
+        pc_path = os.path.join(self.pc_path, sample['file_path'])
+        data = np.load(pc_path).astype(np.float32)
+        # apply input transforms
+        for t in self.transfroms:
+            data = t(data)
+
+        return data
+
+    def __len__(self):
+        return len(self.file_list)
