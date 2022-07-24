@@ -27,7 +27,7 @@ class RandomPointKeep:
         self.num_points = num_points
 
     def __call__(self, x):
-        np.shuffle(x)
+        np.random.shuffle(x)
         return x[:self.num_points, :]
 
 
