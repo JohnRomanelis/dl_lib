@@ -74,11 +74,12 @@ def custom_collate_fn(batch_list):
         
     x_dict_list = defaultdict(list)
 
-    if isinstance(y[0], dict):
-        y_dict_list = defaultdict(list)
-    else:
-        y_dict_list = []
-    
+    if len(y) > 0:
+        if isinstance(y[0], dict):
+            y_dict_list = defaultdict(list)
+        else:
+            y_dict_list = []      
+
     # creating a per key list instead of a list of dicts 
     # for x
     for i, b in enumerate(x):
@@ -106,26 +107,28 @@ def custom_collate_fn(batch_list):
             x_dict[k] = torch.cat(v, dim=0)
         else: 
             x_dict[k] = v
-        
-    # for y
-    if isinstance(y[0], dict):
-        for i, b in enumerate(y):
-            for k, v in b.items():
-                y_dict_list[k].append(v)
-
-        y_dict = {}            
-        for k, v in y_dict_list.items():
-            if k in ["y"]:
-                y_dict[k] = torch.tensor(v)
-            else:
-                y_dict[k] = v
-
-    else:
-        # y is a list of numpy arrays 
-        y = np.concatenate(y)
-        y_dict = torch.from_numpy(y)
-            
-
+    
     x_dict["batch_size"] = len(batch_list)
-            
-    return (x_dict, y_dict)
+
+    # for y
+    if len(y) > 0:
+        if isinstance(y[0], dict):
+            for i, b in enumerate(y):
+                for k, v in b.items():
+                    y_dict_list[k].append(v)
+
+            y_dict = {}            
+            for k, v in y_dict_list.items():
+                if k in ["y"]:
+                    y_dict[k] = torch.tensor(v)
+                else:
+                    y_dict[k] = v
+
+        else:
+            # y is a list of numpy arrays 
+            y = np.concatenate(y)
+            y_dict = torch.from_numpy(y)
+                        
+        return (x_dict, y_dict)
+
+    return x_dict
